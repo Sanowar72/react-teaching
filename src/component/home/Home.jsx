@@ -12,6 +12,7 @@ const Home = () => {
       clearInterval(myinterval);
     };
   }, []);
+
   return (
     <>
       <div> this is Home</div>
