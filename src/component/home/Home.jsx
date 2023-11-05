@@ -1,68 +1,153 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+const mystyle = {
+  duration: 4000,
+  position: "bottom-left",
+  style: {
+    backgroundColor: "black",
+    color: "white",
+  },
+};
 
 const Home = () => {
-  const naviagate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    rollNo: "",
+  });
+  const [studentData, setStudentData] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
 
-  const resetFunc = () => {
-    setEmail("");
-    setName("");
-    setPassword("");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((pre) => ({ ...pre, [name]: value }));
   };
-  
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      rollNo: "",
+    });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const postData = async () => {
+    try {
+      const result = await axios.post(
+        "http://localhost:3000/api/vi/student",
+        formData
+      );
+      console.log(result);
+      if (result.status === 201) {
+        toast.success("Registration Successful", mystyle);
+        resetForm();
+        getallData();
+      }
+    } catch (error) {
+      toast.error("some error occured...");
+      console.log(error);
+    }
+  };
+  const getallData = async () => {
+    try {
+      toast.loading("loading data......", mystyle);
+      const res = await axios.get(
+        "http://localhost:3000/api/vi/student/allstudent"
+      );
+      setStudentData(res.data.data);
+      if (res.status === 200) {
+        toast.dismiss();
+        toast.success("data fetched", mystyle);
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Error in Fetching Data", mystyle);
+    } finally {
+      // toast.dismiss();
+    }
+  };
+  useEffect(() => {
+    getallData();
+  }, []);
+
   const submitData = (e) => {
     e.preventDefault();
-    const payload = {
-      name,
-      myemail: email,
-      password: password,
-    };
-    console.log(payload);
+    postData();
   };
 
   return (
     <>
       <form onSubmit={submitData}>
         <h1>Form in progress....</h1>
-        <h3>Please enter ur name</h3>
+        <h3>Please enter your name</h3>
         <input
           type="text"
-          placeholder="enter ur name"
-          onChange={(e) => setName(e.target.value)}
-          value={name}
+          name="name"
+          placeholder="Enter your name"
+          onChange={handleInputChange}
+          value={formData.name}
           required
         />
-        <h3>enter ur email</h3>
+        <h3>Please enter your roll no</h3>
+        <input
+          type="number"
+          name="rollNo"
+          placeholder="Enter your name"
+          onChange={handleInputChange}
+          value={formData.rollNo}
+          required
+        />
+        <h3>Enter your email</h3>
         <input
           type="email"
-          placeholder="enter ur email"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
+          name="email"
+          placeholder="Enter your email"
+          onChange={handleInputChange}
+          value={formData.email}
           required
         />
-        <h3>ur password</h3>
+        <h3>Your password</h3>
         <input
           type={!showPassword ? "password" : "text"}
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
+          name="password"
+          onChange={handleInputChange}
+          value={formData.password}
           required
         />
-        <button type="button" onClick={() => setShowPassword(!showPassword)}>
+        <button type="button" onClick={togglePasswordVisibility}>
           {!showPassword ? "Show" : "Hide"}
         </button>
 
-        <button type="submit" onSubmit={submitData}>
-          submit details
-        </button>
+        <button type="submit">Submit Details</button>
       </form>
-      <button type="button" onClick={resetFunc}>
-        reset all value
+      <button type="button" onClick={resetForm}>
+        Reset All Values
       </button>
-      <h1>student getails: {` ${name} ${email} ${password}`}</h1>
+      <h1>Student Details: </h1>
+      <div>
+        {studentData.map((ele, ind) => {
+          return (
+            <div key={ind}>
+              <div>{ele.name}</div>
+              <div>{ele.email}</div>
+              <div>{ele.rollNO}</div>
+              <div>{ele.password}</div>
+              <hr />
+            </div>
+          );
+        })}
+      </div>
+      <Toaster />
     </>
   );
 };
