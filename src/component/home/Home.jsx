@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import StudentModal from "../modal/StudentModal";
 const mystyle = {
   duration: 4000,
   position: "bottom-left",
@@ -22,6 +23,8 @@ const Home = () => {
   });
   const [studentData, setStudentData] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [searchedResult, setSearchedResult] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,15 +79,22 @@ const Home = () => {
       // toast.dismiss();
     }
   };
-  useEffect(() => {
-    getallData();
-  }, []);
+  // useEffect(() => {
+  //   getallData();
+  // }, []);
 
   const submitData = (e) => {
     e.preventDefault();
     postData();
   };
-
+  const searchResults = (e) => {
+    setSearchInput(e.target.value);
+    const tempData = e.target.value.toLowerCase();
+    const searchedData = studentData.filter((ele) =>
+      ele.name.toLowerCase().includes(tempData)
+    );
+    setSearchedResult(searchedData);
+  };
   return (
     <>
       <form onSubmit={submitData}>
@@ -133,7 +143,8 @@ const Home = () => {
       <button type="button" onClick={resetForm}>
         Reset All Values
       </button>
-      <h1>Student Details: </h1>
+      <button onClick={() => getallData()}>get all students</button>
+      {/* <h1>Student Details: </h1>
       <div>
         {studentData.map((ele, ind) => {
           return (
@@ -146,7 +157,23 @@ const Home = () => {
             </div>
           );
         })}
+      </div> */}
+      <div>
+        <input
+          type="text"
+          placeholder="search here"
+          onChange={searchResults}
+          value={searchInput.toUpperCase()}
+        />
       </div>
+      <div>
+        <h1>your searched results:----</h1>
+        {searchInput &&
+          searchedResult.map((ele, i) => <p key={i}>{ele.name}</p>)}
+      </div>
+      {studentData.length > 0 && (
+        <StudentModal data={studentData} setStudentDatas={setStudentData} />
+      )}
       <Toaster />
     </>
   );
