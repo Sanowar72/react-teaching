@@ -1,20 +1,39 @@
-import React, { createContext, useState } from "react";
-import Child from "./Child";
-
-const GContext = createContext(null);
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { MyContext } from "../App";
 
 const Parent = () => {
-  const [name, setName] = useState("sonu");
-  const [age, setAge] = useState(10);
+  const navigate = useNavigate();
+  const { allData, watchListData, setWatchListData } = useContext(MyContext);
+  const addwatchList = (ele) => {
+    if (!watchListData.some((data) => data.id === ele.id)) {
+      setWatchListData((pre) => [...pre, ele]);
+    }
+  };
 
   return (
     <>
-      <GContext.Provider value={{ age, setAge, name, setName }}>
-        <Child name={name} />
-      </GContext.Provider>
+      <div>
+        {allData.length > 0 &&
+          allData.map((ele) => {
+            return (
+              <div key={ele.id} style={{ display: "flex" }}>
+                <p>{ele.name}</p>
+                <button onClick={() => addwatchList(ele)}>plus</button>
+              </div>
+            );
+          })}
+      </div>
+      <button
+        onClick={() => {
+          navigate("/watchlist");
+        }}
+      >
+        go to watchlist
+      </button>
     </>
   );
 };
 
 export default Parent;
-export { GContext };
