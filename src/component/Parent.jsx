@@ -1,39 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { MyContext } from "../App";
+import React, { memo, useState } from "react";
 
 const Parent = () => {
-  const navigate = useNavigate();
-  const { allData, watchListData, setWatchListData } = useContext(MyContext);
-  const addwatchList = (ele) => {
-    if (!watchListData.some((data) => data.id === ele.id)) {
-      setWatchListData((pre) => [...pre, ele]);
-    }
-  };
-
+  console.log("this is parent");
+  const [count, setCount] = useState(0);
   return (
     <>
-      <div>
-        {allData.length > 0 &&
-          allData.map((ele) => {
-            return (
-              <div key={ele.id} style={{ display: "flex" }}>
-                <p>{ele.name}</p>
-                <button onClick={() => addwatchList(ele)}>plus</button>
-              </div>
-            );
-          })}
-      </div>
-      <button
-        onClick={() => {
-          navigate("/watchlist");
-        }}
-      >
-        go to watchlist
-      </button>
+      <div>Parent{count}</div>
+      <button onClick={() => setCount(count + 1)}>increase parent count</button>
     </>
   );
 };
 
-export default Parent;
+export default memo(Parent);
