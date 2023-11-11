@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import Parent from "./component/Parent";
-import Child from "./component/Child";
+import React, { useEffect, useRef } from "react";
 
 const App = () => {
-  const [count, setCount] = useState(0);
+  const myref = useRef(null);
+  useEffect(() => {
+    myref.current.click();
+  }, []);
   return (
     <>
-      <h3>{count}</h3>
-      <button onClick={() => setCount(count + 1)}>incr</button>
-      <Parent />
-      <Child />
+      <h3>this is useref</h3>
+      <input type="file" ref={myref} style={{ display: "none" }} />
+      <button onClick={() => myref.current.click()}>click me</button>
     </>
   );
 };
