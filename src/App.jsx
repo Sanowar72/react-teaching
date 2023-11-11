@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import MyTable from "./MyTable";
 
 const App = () => {
   const myref = useRef(null);
@@ -8,8 +9,9 @@ const App = () => {
   return (
     <>
       <h3>this is useref</h3>
-      <input type="file" ref={myref} style={{ display: "none" }} />
+      <input type="file" ref={myref} />
       <button onClick={() => myref.current.click()}>click me</button>
+      <MyTable />
     </>
   );
 };
